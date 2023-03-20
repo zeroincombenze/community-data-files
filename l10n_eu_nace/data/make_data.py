@@ -4,44 +4,41 @@
 
 
 import csv
-import logging
-
-_logger = logging.getLogger(__name__)
 
 # List of languages to generate translations for
 LANGS = [
-    "bg",
-    "cs",
-    "da",
-    "de",
-    "et",
-    "en",
-    "es",
-    "el",
-    "fi",
-    "fr",
-    "hr",
-    "hu",
-    "it",
-    "lt",
-    "lv",
-    "mt",
-    "nl",
-    "no",
-    "pl",
-    "pt",
-    "ro",
-    "ru",
-    "sk",
-    "sl",
-    "sv",
-    "tr",
+    'bg',
+    'cs',
+    'da',
+    'de',
+    'et',
+    'en',
+    'es',
+    'el',
+    'fi',
+    'fr',
+    'hr',
+    'hu',
+    'it',
+    'lt',
+    'lv',
+    'mt',
+    'nl',
+    'no',
+    'pl',
+    'pt',
+    'ro',
+    'ru',
+    'sk',
+    'sl',
+    'sv',
+    'tr',
 ]
 
 # All the generated record ids will be in this forms
 ID_TEMPLATE = "nace_%s"
 
-_logger.info("Generating the English CSV file...")
+print("Generating the English CSV file...")
 src = csv.reader(open("NACE_REV2_en.csv", "rU"))
 dest = csv.writer(open("res.partner.nace.csv", "w"), quoting=csv.QUOTE_ALL)
 # Write the file header
@@ -50,10 +47,10 @@ dest.writerow(["id", "parent_id:id", "code", "name"])
 parent_ids = {0: ID_TEMPLATE % "root"}
 dest.writerow([parent_ids[0], "", "", "NACE"])
 # Skip first line
-next(src)
+src.next()
 english = {}
 for row in src:
-    xml_id = ID_TEMPLATE % row[1].replace(".", "_")
+    xml_id = ID_TEMPLATE % row[1].replace('.', '_')
     code = row[1]
     name = row[2]
     # determine the parent
@@ -64,14 +61,14 @@ for row in src:
     # Remember the English name and the id
     english[xml_id] = name
     dest.writerow([xml_id, parent_id, code, name])
-_logger.info("Done.\n")
+print("Done.\n")
 
 for lang in LANGS:
     filename = lang != "en" and ("%s.po" % lang) or "l10n_eu_nace.pot"
-    _logger.info("Generating %s..." % filename)
+    print("Generating %s..." % filename)
     src = csv.reader(open("NACE_REV2_%s.csv" % lang, "rU"))
     # Skip first line
-    next(src)
+    src.next()
     # Write file header
     dest = open("../i18n/%s" % filename, "w")
     dest.write(
@@ -96,7 +93,7 @@ msgstr ""
     )
     for row in src:
         name = "[%s] %s" % (row[1], row[2])
-        xml_id = ID_TEMPLATE % row[1].replace(".", "_")
+        xml_id = ID_TEMPLATE % row[1].replace('.', '_')
         dest.write(
             """#. module: l10n_eu_nace
 #: model:res.partner.nace,name:l10n_eu_nace.%s
@@ -106,4 +103,4 @@ msgstr "%s"
 """
             % (xml_id, english[xml_id], lang != "en" and name or "")
         )
-_logger.info("Done.\n")
+print("Done.\n")
